@@ -29,60 +29,55 @@
 #include "altera_avalon_timer_regs.h"
 
 
-////////////////////////////
-///                      ///
-///       DEFINES        ///
-///                      ///
-////////////////////////////
-
+/*---------------------------------------DEFINES----------------------------------------*/
 /* Constants defined by the mobile robot model */
 #define R_WHEEL_ONLY		30						//radius of the wheel in mm
 #define R_TRACKED			117.5					//radius of the belt in mm
 #define N					343						//number of ticks per revolution in the encoder 1000/3
 #define L_WHEEL_SEPARATION	190						//wheel separation in mm
 #define MM_PER_TICK			(2*M_PI*R_WHEEL_ONLY)/N	//mm traveled each tick
-
 /* Print Status Options */
 #define TELEMETRY_VALUES	0x00
 #define ODOMETRY_VALUES		0x01
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///   PUBLIC VARIABLES   ///
-///                      ///
-////////////////////////////
+/*----------------------------------PUBLIC VARIABLES------------------------------------*/
 
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///   PRIVATE VARIABLES  ///
-///                      ///
-////////////////////////////
-
+/*---------------------------------PRIVATE VARIABLES------------------------------------*/
 /* FPGA variables */
-unsigned char led_val = 0;
-unsigned char sw_val = 0;
-
+unsigned char led_val = 0; //to control de LEDs of the FPGA Board
+unsigned char sw_val = 0; //to get the values of the SWITCHES from the FPGA Board
 /* variable to store theta before the angle */
-
 float theta_before = 0;
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///    PRIVATE TYPES     ///
-///                      ///
-////////////////////////////
-
+/*-----------------------------------PRIVATE TYPES--------------------------------------*/
+// TYPE: rover_encoders_t
+// Description: structure used to store the average values of the encoders in the robot
+// Fields:      - right: value of the encoders in the right wheel
+//              - left:  value of the encoders in the left wheel
 typedef struct {
 	int8_t right;
 	int8_t left;
 } rover_encoders_t;
 
+// TYPE: rover_PWM_t
+// Description: structure used to send the PWM signals to the wheels
+// Fields:      - right: value of the PWM signal for the right wheel
+//              - left:  value of the PWM signal for the left wheel
 typedef struct {
 	int8_t right;
 	int8_t left;
 } rover_PWM_t;
 
+// TYPE: rover_encoders_raw_t
+// Description: structure used to store the raw values of the four encoders in the robot
+// Fields:      - r1: value of the encoder in the first right wheel 
+//              - r2: value of the encoder in the second right wheel 
+//              - l1: value of the encoder in the first left wheel 
+//              - l2: value of the encoder in the second left wheel 
 typedef struct {
 	int8_t r1;
 	int8_t r2;
@@ -90,37 +85,71 @@ typedef struct {
 	int8_t l2;
 } rover_encoders_raw_t;
 
+// TYPE: rover_wheel_velocities_t
+// Description: structure used to send the values of the velocities of each wheel to the robot
+// Fields:      - right: velocity for the right wheels
+//              - left:  velocity for the left wheels
 typedef struct {
 	float right;
 	float left;
 } rover_wheel_velocities_t;
 
+// TYPE: rover_direction_t
+// Description: enumeration used to store the hex values for the dH bridges tha controls the direction of movement of the robot
+// Fields:      - RoverDirection_Forward:	Hex value for the robot to move forward
+//              - RoverDirection_Right:		Hex value for the robot to move right
+//              - RoverDirection_Left:		Hex value for the robot to move left
+//              - RoverDirection_Backwards: Hex value for the robot to move backwards
 typedef enum{
 	RoverDirection_Forward 		= 0x35,
 	RoverDirection_Right 		= 0x36,
 	RoverDirection_Left 		= 0x39,
 	RoverDirection_Backwards 	= 0x3A
 } rover_direction_t;
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-/// FUNCTION PROTOTYPES  ///
-///                      ///
-////////////////////////////
-
+/*---------------------------------FUNCTION PROTOTYPES----------------------------------*/
+// FUNCTION: SetMobileRobotVelocity()
+// Description: function that sends the PWM signal to the wheels according to the linear and angular velocities required by the motion controller
+// Parameters:  - velocities: linear and angular velocities of the robot needed for the robot
+//              - wheel_velocities: velocity of the wheels according to the needed linear and angular velocities
+//              - measured_wheel_velocities: wheel velocities measured by the UpdatedOdometry() function
+//              - direction: direction needed for the robot movement
+//              - PWM: PWM value to send to the wheels
+//              - pid_left_wheel: PID parameters for the PID controller in the left wheel
+//              - pid_right_wheel: PID parameters for the PID controller in the right wheel
+// Return:      N/A
 void SetMobileRobotVelocity(rover_velocities_t * velocities, rover_wheel_velocities_t * wheel_velocities, rover_wheel_velocities_t * measured_wheel_velocities, rover_direction_t * direction, rover_PWM_t * PWM, rover_PID_const_t pid_left_wheel, rover_PID_const_t pid_right_wheel);
+
+// FUNCTION: UpdateOdometry()
+// Description: function to send a message over the RF channel to a specific recipient
+// Parameters:  - to: recipient address
+//              - str: string containing the message to send
+//              - len: length of the string (messages longer than COMM_MAX_MSG_SIZE will be truncated)
+// Return:      N/A
 void UpdateOdometry(rover_pose_t * pose, rover_encoders_t * delta_enc, rover_encoders_raw_t * enc_raw, rover_wheel_velocities_t * measured_wheel_velocities);
+
+// FUNCTION: irqkey()
+// Description: function to define the interruptions of the FPGA board buttons
+// Parameters:  - context: context of the interruption
+//              - id: id of the interruption
+// Return:      N/A
 static void irqkey (void * context, alt_u32 id);
+
+// FUNCTION: PrintStatus()
+// Description: function to send a message over the RF channel to a specific recipient with information of current status of the robot
+// Parameters:  - opt_to_print: the kind of information to be sended
+//              - pose: current pose of the robot
+//              - pose_error: current error in the pose of the robot with respect of the controller
+//              - enc: raw value of the encoders
+//              - velocities: linear and angular velocities of the robot needed for the robot
+//              - wheel_velocities: velocity of the wheels according to the needed linear and angular velocities
+// Return:      N/A
 void PrintStatus (uint8_t opt_to_print, rover_pose_t * pose, rover_pose_t * pose_error, rover_encoders_raw_t * enc, rover_velocities_t * velocities, rover_wheel_velocities_t * wheel_velocities);
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///   PUBLIC FUNCTIONS   ///
-///                      ///
-////////////////////////////
-
-
-// FUNCTION: TaskControl()
+/*----------------------------------PUBLIC FUNCTIONS------------------------------------*/
+// FUNCTION: RoverTaskControl()
 // Description: main task of the control module.
 void RoverTaskControl(void *pvParameters)
 {
@@ -133,7 +162,7 @@ void RoverTaskControl(void *pvParameters)
 
 	rover_pose_control_params_t params;
 
-	// command reception variables
+	/* command reception variables */ 
 	comm_receiver_t cmd_receiver	= NULL;
 	char * command_str				= NULL;
 
@@ -197,27 +226,26 @@ void RoverTaskControl(void *pvParameters)
 	alt_irq_register( KEY_IRQ, NULL,(void*)irqkey );
 
 
-	// Register listener for commands
+	/* Register listener for commands */ 
 	cmd_receiver = RoverRegisterMsgReceiver();
 
-
+	/* Runs continuously */
 	while(1){
 
 		//printf("T_control RUNNING\n");
 
-		// check if there is a new command
+		/* check if there is a new command */ 
 		/*if (RoverGetMsg(cmd_receiver, &command_str) > 0) {
 			printf("New COMMAND received: %s\n", command_str);
 			RoverReleaseMsg(command_str);
 		}*/
 
+		/* Compute the pose of the robot according to the encoder values*/
 		UpdateOdometry(&pose, &delta_enc, &enc_raw, &measured_wheel_velocities);
 
+		/* Run the controller algorithm until the robot is in the desired pose*/
 		//is_desired_pose = PoseController_Run(RoverPoseControl_PID, &params, &pose, &desired_pose, &pose_error, &velocities);
-
-		/*
-
-		if(is_desired_pose){
+		/*if(is_desired_pose){
 			// There is a new command?
 			// Compute new pose
 			// Start again - is_desired_pose = false;
@@ -227,13 +255,13 @@ void RoverTaskControl(void *pvParameters)
 		}
 	 	*/
 
+	 	/* Set the velocities of the wheels according to the motion controller*/
 		SetMobileRobotVelocity(&velocities, &wheel_velocities, &measured_wheel_velocities, &direction, &PWM, pid_left_wheel, pid_right_wheel);
 
-
+		/* Define an specific direction and PWM values for the robot */
 		//IOWR(MOTORES_BASE,0,RoverDirection_Forward);
 		//IOWR(PWM2_BASE,0,40); //PWM2 -> Left  wheel
 		//IOWR(PWM1_BASE,0,100); //PWM1 -> Right wheel
-
 
 		/* Wait for 10 control periods to send a message */
 		if (msg_period == 5){
@@ -248,18 +276,18 @@ void RoverTaskControl(void *pvParameters)
 	}
 
 }
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///   PRIVATE FUNCTIONS  ///
-///                      ///
-////////////////////////////
-
+/*---------------------------------PRIVATE FUNCTIONS------------------------------------*/
+// FUNCTION: SetMobileRobotVelocity()
+// Description: function that sends the PWM signal to the wheels according to the linear and angular velocities required by the motion controller
 void SetMobileRobotVelocity(rover_velocities_t * velocities, rover_wheel_velocities_t * wheel_velocities, rover_wheel_velocities_t * measured_wheel_velocities, rover_direction_t * direction, rover_PWM_t * PWM, rover_PID_const_t pid_left_wheel, rover_PID_const_t pid_right_wheel){
 
+	/* Compute the wheel velocities according to the robot model and the desired linear and angular velocities*/
 	wheel_velocities->left  = (((2*(velocities->v)) - (velocities->w*L_WHEEL_SEPARATION))/(2*R_WHEEL_ONLY));
 	wheel_velocities->right = (((2*(velocities->v)) + (velocities->w*L_WHEEL_SEPARATION))/(2*R_WHEEL_ONLY));
 
+	/* Compute the robot direction according to the wheel velocities */
 	if (wheel_velocities->left >= 0 && wheel_velocities->right >= 0){
 		*direction = RoverDirection_Forward;
 	} else if (wheel_velocities->left <= 0 && wheel_velocities->right <= 0){
@@ -276,13 +304,13 @@ void SetMobileRobotVelocity(rover_velocities_t * velocities, rover_wheel_velocit
 		*direction = RoverDirection_Forward;
 	}
 
+	/* Use a PID controller to compute the PWM values of the wheels*/
 	//velocities->w = PIDControl(&(params->pid_const), desired_pose->theta, pose->theta, &angle_error, is_angle);
 	PWM->right = PIDControl(&pid_right_wheel, wheel_velocities->right, measured_wheel_velocities->right, 0, false);
 	PWM->left  = PIDControl(&pid_left_wheel,  wheel_velocities->left,  measured_wheel_velocities->left,  0, false);
 
-	/*
-	 * These equations take into account the differences in wheel velocities
-	 */
+	/* Use an open loop controller to compute the PWM values of the wheels*/
+	/* These equations take into account the differences in wheel velocities */
 	/*if (wheel_velocities->right <= 170){
 		PWM->right = 0;
 	} else if (wheel_velocities->right > 170 && wheel_velocities->right <= 320){
@@ -335,11 +363,15 @@ void SetMobileRobotVelocity(rover_velocities_t * velocities, rover_wheel_velocit
 		PWM->left = 0;
 	}
 	*/
+
+	/* Set the robot direction and send the PWM values to the wheel motors */
 	IOWR(MOTORES_BASE,0,*direction);
 	IOWR(PWM1_BASE,0,PWM->right);
 	IOWR(PWM2_BASE,0,PWM->left);
 }
 
+// FUNCTION: RoverSendMsg()
+// Description: function to send a message over the RF channel to a specific recipient
 void UpdateOdometry(rover_pose_t * pose, rover_encoders_t * delta_enc, rover_encoders_raw_t * enc_raw, rover_wheel_velocities_t * measured_wheel_velocities)
 {
 
@@ -350,6 +382,7 @@ void UpdateOdometry(rover_pose_t * pose, rover_encoders_t * delta_enc, rover_enc
 	float Dl=0;
 	float Dc=0;
 
+	/* Read the values from the encoders */
 	volatile uint32_t encoder_ip = IORD(ENCODER_READING_BASE,0);
 	enc_raw->r2 = ((encoder_ip>>0)  & 0x000000FF);
 	enc_raw->r1 = ((encoder_ip>>8)  & 0x000000FF);
@@ -359,56 +392,33 @@ void UpdateOdometry(rover_pose_t * pose, rover_encoders_t * delta_enc, rover_enc
 	//printf("Encoder ip value: 0x%.8x \n", encoder_ip);
 	//printf("Encoder values: l1 %d, l2 %d, r1 %d r2 %d \n", cur_left_enc1, cur_left_enc2, cur_right_enc1, cur_right_enc2);
 
-	/*
-	 *	Update the cumulative encoders
-	 */
+	/* Update the cumulative encoders */
 	delta_enc->right	= enc_raw->r2;
 	delta_enc->left 	= - enc_raw->l2;
 
-	/*
-	 *	Compute Dl, Dr and Dc
-	 */
+	/* Compute Dl, Dr and Dc */
 	Dr = MM_PER_TICK * delta_enc->right;
 	Dl = MM_PER_TICK * delta_enc->left;
 	Dc = ((Dr+Dl)/2);
 
 	/* Compute the wheel velocities using Dr and Dl */
-
 	measured_wheel_velocities->right = 10 * Dr;
 	measured_wheel_velocities->left  = 10 * Dl;
 
-	/*
-	 * Compute the x_dt, y_dt, theta_dt values from Dr, Dl, Dc
-	 */
+	/* Compute the x_dt, y_dt, theta_dt values from Dr, Dl, Dc */
 	pose_dt.x = Dc*cosf(pose->theta);
 	pose_dt.y = Dc*sinf(pose->theta);
 	pose_dt.theta = ((Dr-Dl)/L_WHEEL_SEPARATION);
 
-	/*
-	* Compute the new values x_new, y_new, theta_new for the robot pose
-	*/
+	/* Compute the new values x_new, y_new, theta_new for the robot pose */
 	pose->x += pose_dt.x;
 	pose->y += pose_dt.y;
 	theta_before += pose_dt.theta;
 	pose->theta = (0.5107 *(theta_before)) + 0.0735;
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    PrintStatus()											**
-**																		**
-** Description: Funciï¿½n donde se envía por consola el estatus de  	**
-** 				diferentes variables del robot							**
-** 																		**
-** Notes:       En esta funciï¿½n se define un mensaje a imprimir		**
-** 				en consola de acuerdo con las variables que se deseen 	**
-** 				observar.												**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: PrintStatus()
+// Description: function to send a message over the RF channel to a specific recipient with information of current status of the robot
 void PrintStatus (
 	uint8_t opt_to_print,
 	rover_pose_t * pose,
@@ -417,45 +427,35 @@ void PrintStatus (
 	rover_velocities_t * velocities,
 	rover_wheel_velocities_t * wheel_velocities)
 {
-  if (opt_to_print == TELEMETRY_VALUES){
-    RoverSendMsg_MOTOR_TELEM(1,0,
-    	wheel_velocities->left, wheel_velocities->right,
-    	0, 0, /* TODO: get motor currents */
-    	enc->l1, enc->l2, enc->r1, enc->r2);
-  }
-  else if (opt_to_print == ODOMETRY_VALUES){
-    RoverSendMsg_CONTROL_OUTPUT(1,0,
-        pose->x, pose->y, pose->theta,
-        velocities->v,velocities->w,
-        pose_error->x, pose_error->y, pose_error->theta);
-  }
-  else {
-     printf("[ERR] Unknown print option (%d)!\n", opt_to_print);
-  }
+	/* Send information about the telemetry values */
+	if (opt_to_print == TELEMETRY_VALUES){
+		RoverSendMsg_MOTOR_TELEM(1,0,
+			wheel_velocities->left, wheel_velocities->right,
+			0, 0, /* TODO: get motor currents */
+			enc->l1, enc->l2, enc->r1, enc->r2);
+	}
+	/* Send information about the odometry values */
+	else if (opt_to_print == ODOMETRY_VALUES){
+		RoverSendMsg_CONTROL_OUTPUT(1,0,
+			pose->x, pose->y, pose->theta,
+			velocities->v,velocities->w,
+			pose_error->x, pose_error->y, pose_error->theta);
+	}
+	else {
+		printf("[ERR] Unknown print option (%d)!\n", opt_to_print);
+	}
 }
-
 
 /*
  * Interrupt Functions
  */
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    irqkey()												**
-**																		**
-** Description: Funciï¿½n que define la interrupciï¿½n de los pulsadores**
-** 				de la tarjeta DE0 Nano									**
-** 																		**
-** Notes:       N/A														**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: irqkey()
+// Description: function to define the interruptions of the FPGA board buttons
 static void irqkey (void * context, alt_u32 id){
 	led_val = 0;
 	IOWR_ALTERA_AVALON_PIO_EDGE_CAP(KEY_BASE, 0);
 	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(KEY_BASE, 0x3);
 	IOWR_16DIRECT(KEY_BASE, 0, 0); // reset request
 }
+/*--------------------------------------------------------------------------------------*/

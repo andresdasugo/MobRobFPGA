@@ -12,53 +12,37 @@
 
 #include "rover_task.h"
 
-#include "io.h"										// for reading or writing to I/O
-#include "system.h"									// for the configuration and register of the QSYS system
+#include "io.h"							// for reading or writing to I/O
+#include "system.h"						// for the configuration and register of the QSYS system
 #include "sys/alt_irq.h"
 #include "altera_avalon_uart.h"
 #include "altera_avalon_uart_regs.h"
 
-////////////////////////////
-///                      ///
-///   PUBLIC VARIABLES   ///
-///                      ///
-////////////////////////////
+/*----------------------------------PUBLIC VARIABLES------------------------------------*/
 
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///   PRIVATE VARIABLES  ///
-///                      ///
-////////////////////////////
-
+/*-----------------------------------PRIVATE TYPES--------------------------------------*/
 /* Ultrasonic sensor variables */
-unsigned char buffer1[5]={0}, buffer2[5]={0}, buffer3[5]={0}, buffer4[5]={0}, buffer5[5]={0}, buffer6[5]={0}, buffer7[5]={0}, buffer8[5]={0};
-unsigned char puntero1 = 0, puntero2 = 0, puntero3 = 0, puntero4 = 0, puntero5 = 0, puntero6 = 0, puntero7 = 0, puntero8 = 0;
+//unsigned char buffer1[5]={0}, buffer2[5]={0}, buffer3[5]={0}, buffer4[5]={0}, buffer5[5]={0}, buffer6[5]={0}, buffer7[5]={0}, buffer8[5]={0};
+//unsigned char puntero1 = 0, puntero2 = 0, puntero3 = 0, puntero4 = 0, puntero5 = 0, puntero6 = 0, puntero7 = 0, puntero8 = 0;
 unsigned int sensordist1=0, sensordist2=0, sensordist3=0, sensordist4 = 0, sensordist5=0, sensordist6=0, sensordist7=0, sensordist8 = 0;
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///    PRIVATE TYPES     ///
-///                      ///
-////////////////////////////
+/*-----------------------------------PRIVATE TYPES--------------------------------------*/
 
+/*--------------------------------------------------------------------------------------*/
 
-
-////////////////////////////
-///                      ///
-/// FUNCTION PROTOTYPES  ///
-///                      ///
-////////////////////////////
+/*---------------------------------FUNCTION PROTOTYPES----------------------------------*/
+// FUNCTION: InstallUltrasonicInterrupts()
+// Description: function to define the interrupts from the ultrasonic sensors
+// Parameters:  N/A
+// Return:      N/A
 void InstallUltrasonicInterrupts();
+/*--------------------------------------------------------------------------------------*/
 
-////////////////////////////
-///                      ///
-///   PUBLIC FUNCTIONS   ///
-///                      ///
-////////////////////////////
-
-
-// FUNCTION: TaskSensing()
+/*----------------------------------PUBLIC FUNCTIONS------------------------------------*/
+// FUNCTION: RoverTaskSensing()
 // Description: main task of the sensing module.
 void RoverTaskSensing(void *pvParameters)
 {
@@ -75,339 +59,260 @@ void RoverTaskSensing(void *pvParameters)
 		vTaskDelayUntil( &last_wakeup_time, TASK_MS_2_TICKS(1000) );
 	}
 }
+/*--------------------------------------------------------------------------------------*/
 
-
-
-////////////////////////////
-///                      ///
-///   PRIVATE FUNCTIONS  ///
-///                      ///
-////////////////////////////
-
-/*
- * Interrupt Functions
- */
-
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist1()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 1 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+/*---------------------------------PRIVATE FUNCTIONS------------------------------------*/
+/* Interrupt Functions */
+// FUNCTION: isrdist1()
+// Description: function to read the values from ultrasonic sensor 1 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist1 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST1_BASE);
 
 	if (test == 'R'){
-		puntero1 = 0;
-		buffer1[puntero1] = test;
-		puntero1++;
+		puntero = 0;
+		buffer[puntero1] = test;
+		puntero++;
 	}
 	else{
-		buffer1[puntero1] = test - 48;
-		puntero1++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist1 = (buffer1[1]*1000 + buffer1[2]*100 + buffer1[3]*10 + buffer1[4]); //ASCII  a binario
+		sensordist1 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
 		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist2()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 2 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist2()
+// Description: function to read the values from ultrasonic sensor 2 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist2 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST2_BASE);
 
 	if (test == 'R'){
-		puntero2 = 0;
-		buffer2[puntero2] = test;
-		puntero2++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer2[puntero2] = test - 48;
-		puntero2++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist2 = (buffer2[1]*1000 + buffer2[2]*100 + buffer2[3]*10 + buffer2[4]);
+		sensordist2 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist3()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 3 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist3()
+// Description: function to read the values from ultrasonic sensor 3 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist3 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST3_BASE);
 
 	if (test == 'R'){
-		puntero3 = 0;
-		buffer3[puntero3] = test;
-		puntero3++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer3[puntero3] = test - 48;
-		puntero3++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist3 = (buffer3[1]*1000 + buffer3[2]*100 + buffer3[3]*10 + buffer3[4]);
+		sensordist3 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist4()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 4 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist4()
+// Description: function to read the values from ultrasonic sensor 4 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist4 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST4_BASE);
 
 	if (test == 'R'){
-		puntero4 = 0;
-		buffer4[puntero4] = test;
-		puntero4++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer4[puntero4] = test - 48;
-		puntero4++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist4 = (buffer4[1]*1000 + buffer4[2]*100 + buffer4[3]*10 + buffer4[4]);
+		sensordist4 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist5()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 5 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist5()
+// Description: function to read the values from ultrasonic sensor 5 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist5 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST5_BASE);
 
 	if (test == 'R'){
-		puntero5 = 0;
-		buffer5[puntero5] = test;
-		puntero5++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer5[puntero5] = test - 48;
-		puntero5++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist5 = (buffer5[1]*1000 + buffer5[2]*100 + buffer5[3]*10 + buffer5[4]);
+		sensordist5 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist6()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 6 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist6()
+// Description: function to read the values from ultrasonic sensor 6 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist6 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST6_BASE);
 
 	if (test == 'R'){
-		puntero6 = 0;
-		buffer6[puntero6] = test;
-		puntero6++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer6[puntero6] = test - 48;
-		puntero6++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist6 = (buffer6[1]*1000 + buffer6[2]*100 + buffer6[3]*10 + buffer6[4]);
+		sensordist6 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist7()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 7 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist7()
+// Description: function to read the values from ultrasonic sensor 7 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist7 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST7_BASE);
 
 	if (test == 'R'){
-		puntero7 = 0;
-		buffer7[puntero7] = test;
-		puntero7++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer7[puntero7] = test - 48;
-		puntero7++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist7 = (buffer7[1]*1000 + buffer7[2]*100 + buffer7[3]*10 + buffer7[4]);
+		sensordist7 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    isrdist8()												**
-**																		**
-** Description: Funci�n que lee los valores de distancia del sensor 	**
-** 				ultrasonico 8 usando UART								**
-** 																		**
-** Notes:       La comunicaci�n del sensor es RS232, la salida es un 	**
-** 				ASCII 'R', seguida de tres ASCII que representan el		**
-** 				valor de la distancia en pulgadas y termina con un 		**
-** 				ASCII 13 (CR o Enter). Baud=9600, 8 bits, sin paridad	**
-** 				con un bit de parada									**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: isrdist8()
+// Description: function to read the values from ultrasonic sensor 8 using UART
+// Parameters:  - context
+//				- id
+// Return:      N/A
+// Note: 		Sensor communication is RS232, output is an ASCII 'R' followed by three ASCII representing the distance value 
+//				in inches and ending with an ASCII 13 (CR or Enter). Baud=9600, 8 bits, no parity with a stop bit.
 static void isrdist8 (void * context, alt_u32 id){
+
+	unsigned char buffer[5];
+	unsigned char puntero;
 
 	unsigned char test;
 	test = IORD_ALTERA_AVALON_UART_RXDATA(DIST8_BASE);
 
 	if (test == 'R'){
-		puntero8 = 0;
-		buffer8[puntero8] = test;
-		puntero8++;
+		puntero = 0;
+		buffer[puntero] = test;
+		puntero++;
 	}
 	else{
-		buffer8[puntero8] = test - 48;
-		puntero8++;
+		buffer[puntero] = test - 48;
+		puntero++;
 	}
 
 	if (test == 13){
-		sensordist8 = (buffer8[1]*1000 + buffer8[2]*100 + buffer8[3]*10 + buffer8[4]);
+		sensordist8 = (buffer[1]*1000 + buffer[2]*100 + buffer[3]*10 + buffer[4]); //ASCII  a binario
+		//sensordist1 = (buffer1[1]*100 + buffer1[2]*10 + buffer1[3]);
 	}
 }
 
-/*************************************************************************
-**************************************************************************
-**																		**
-** Function:    interrupciones()										**
-**																		**
-** Description: Funci�n donde se definen las interrupciones 			**
-** 																		**
-** Notes:       En esta funci�n se definen interrupciones asociadas con **
-** 				los encoders, la tarjeta XBee, el GPS y los sensores de **
-** 				distancia												**
-**																		**
-** Returns:     N/A														**
-**																		**
-**************************************************************************
-*************************************************************************/
+// FUNCTION: InstallUltrasonicInterrupts()
+// Description: function to define the interrupts from the ultrasonic sensors
 void InstallUltrasonicInterrupts() {
 
 	int context_dist1;
@@ -443,6 +348,4 @@ void InstallUltrasonicInterrupts() {
 	alt_irq_enable (DIST8_IRQ);
 
 }
-
-
-
+/*--------------------------------------------------------------------------------------*/
