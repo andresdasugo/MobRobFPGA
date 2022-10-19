@@ -8,13 +8,12 @@
 #ifndef ROVER_SENSING_H_
 #define ROVER_SENSING_H_
 
-// FUNCTION: TaskSensing()
+/*---------------------------------FUNCTION PROTOTYPES----------------------------------*/
+// FUNCTION: RoverTaskSensing()
 // Description: main task of the sensing module.
-//              Calculates the current position of the robot x,y,theta
 // Parameters:  - pvParameters: pointer to task parameters (pass NULL, not used)
-// Return:      -
+// Return:      N/A
 void RoverTaskSensing(void *pvParameters);
-
-
+/*--------------------------------------------------------------------------------------*/
 
 #endif /* ROVER_SENSING_H_ */

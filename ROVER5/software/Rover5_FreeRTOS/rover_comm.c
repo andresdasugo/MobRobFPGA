@@ -24,7 +24,7 @@
 
 #include "altera_avalon_uart.h"
 
-
+/*---------------------------------------DEFINES----------------------------------------*/
 #define COMM_MSG_TRAILING_STR			"\0\r"	// every message ends with this string
 #define COMM_MSG_TRAILING_STR_SIZE		(2)		// size of the string that closes a message
 #define COMM_MAX_MSG_SIZE				(1024)	// max number of bytes in a message
@@ -32,23 +32,13 @@
 #define RX_BUF_SIZE						(1024)	// max number of bytes of the receiver buffer
 
 #define MAX_QUEUE_LEN					(8)		// max number of messages in a queue
+/*--------------------------------------------------------------------------------------*/
 
+/*----------------------------------PUBLIC VARIABLES------------------------------------*/
 
-volatile uint32_t _msg_cnt = 0;
+/*--------------------------------------------------------------------------------------*/
 
-
-////////////////////////////
-///                      ///
-///   PUBLIC VARIABLES   ///
-///     (to avoid!)      ///
-////////////////////////////
-
-
-////////////////////////////
-///                      ///
-///    PRIVATE TYPES     ///
-///                      ///
-////////////////////////////
+/*-----------------------------------PRIVATE TYPES--------------------------------------*/
 
 // TYPE: comm_msg_t
 // Description: structure used to send a message over a queue
@@ -58,27 +48,16 @@ typedef struct {
 	uint16_t	len;
 	uint8_t *	buf;
 } comm_msg_t;
+/*--------------------------------------------------------------------------------------*/
 
-
-
-////////////////////////////
-///                      ///
-///   PRIVATE VARIABLES  ///
-///                      ///
-////////////////////////////
-
+/*---------------------------------PRIVATE VARIABLES------------------------------------*/
+volatile uint32_t _msg_cnt = 0;
 SemaphoreHandle_t	tx_queue_mutex_	= NULL;
 QueueHandle_t		tx_queue_		= NULL;
 QueueHandle_t		rx_queue_		= NULL;
+/*--------------------------------------------------------------------------------------*/
 
-
-
-////////////////////////////
-///                      ///
-/// FUNCTION PROTOTYPES  ///
-///                      ///
-////////////////////////////
-
+/*---------------------------------FUNCTION PROTOTYPES----------------------------------*/
 // FUNCTION: string_2_msg()
 // Description: function to create a comm_msg_t from a string of characters (allocating the memory for the message)
 uint16_t string_2_msg(const char * str, uint16_t len, comm_msg_t * msg);
@@ -90,15 +69,9 @@ uint16_t parse_msg(char * buf, unsigned int len, comm_msg_t * msg);
 // FUNCTION: dispatch_msg()
 // Description: function to dispatch a message to a receiving queue
 int8_t dispatch_msg(comm_receiver_t receiver, comm_msg_t * msg);
+/*--------------------------------------------------------------------------------------*/
 
-
-////////////////////////////
-///                      ///
-///   PUBLIC FUNCTIONS   ///
-///                      ///
-////////////////////////////
-
-
+/*----------------------------------PUBLIC FUNCTIONS------------------------------------*/
 // FUNCTION: RoverSendMsg()
 // Description: function to send a message over the RF channel to a specific recipient
 int8_t RoverSendMsg(uint8_t to, const char * str, uint16_t len)
@@ -171,7 +144,6 @@ comm_receiver_t RoverRegisterMsgReceiver()
 	return ret_val;
 }
 
-
 // FUNCTION: RoverGetMsg()
 // Description: function used to get a message (if any)
 uint8_t RoverGetMsg(comm_receiver_t receiver, char ** str)
@@ -197,7 +169,6 @@ uint8_t RoverGetMsg(comm_receiver_t receiver, char ** str)
 	return ret_val;
 }
 
-
 // FUNCTION: RoverReleaseMsg()
 // Description: function to release the memory associated to a received message
 void RoverReleaseMsg(char * str)
@@ -206,7 +177,6 @@ void RoverReleaseMsg(char * str)
 		free(str);
 	}
 }
-
 
 // FUNCTION: TaskComm()
 // Description: main task of the communication module.
@@ -246,7 +216,6 @@ void RoverTaskComm(void *pvParameters)
 			}
 		}
 	}
-
 	// start the task
 	while(1)
 	{
@@ -269,7 +238,6 @@ void RoverTaskComm(void *pvParameters)
 				free(tx_msg.buf);
 			}
 		}
-
 		// receive bytes from the UART and push new messages to the RX queue
 		if ((bytes_read = read(uart_rx_fd, rx_buf+rx_offset, RX_BUF_SIZE-rx_offset)) > 0) {
 			rx_offset += bytes_read;
@@ -292,23 +260,16 @@ void RoverTaskComm(void *pvParameters)
 		else {
 			// nothing to read
 		}
-
 		// Wait for the next cycle.
 		vTaskDelayUntil( &last_wakeup_time, TASK_MS_2_TICKS(1) );
 	}
-
 	// close the UART File descriptors
 	if (uart_tx_fd != 0) close(uart_tx_fd);
 	if (uart_rx_fd != 0) close(uart_rx_fd);
 }
+/*--------------------------------------------------------------------------------------*/
 
-
-
-////////////////////////////
-///                      ///
-///   PRIVATE FUNCTIONS  ///
-///                      ///
-////////////////////////////
+/*---------------------------------PRIVATE FUNCTIONS------------------------------------*/
 
 // FUNCTION: string_2_msg()
 // Description: function to create a comm_msg_t from a string of characters (allocating the memory for the message)
@@ -410,3 +371,4 @@ int8_t dispatch_msg(comm_receiver_t receiver, comm_msg_t * msg)
 
 	return ret_val;
 }
+/*--------------------------------------------------------------------------------------*/

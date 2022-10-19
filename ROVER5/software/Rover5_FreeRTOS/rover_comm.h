@@ -27,7 +27,7 @@
 
 typedef QueueHandle_t comm_receiver_t;
 
-
+/*---------------------------------FUNCTION PROTOTYPES----------------------------------*/
 // FUNCTION: RoverSendMsg()
 // Description: function to send a message over the RF channel to a specific recipient
 // Parameters:  - to: recipient address
@@ -69,7 +69,6 @@ void RoverReleaseMsg(char * str);
 // Parameters:  - pvParameters: pointer to task parameters (pass NULL, not used)
 // Return:      -
 void RoverTaskComm(void *pvParameters);
-
-
+/*--------------------------------------------------------------------------------------*/
 
 #endif /* ROVER_COMM_H_ */

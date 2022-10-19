@@ -6,12 +6,15 @@
 /*
 * [File Name]     Rover5_FreeRTOS.c
 * [Platform]      DE0-Nano
-* [Project]       UPTCRover5v2 & FreeRTOS
-* [Version]       1.00
+* [Project]       MobRobFPGA/Rover5 & FreeRTOS
+* [Version]       1.3
 * [Author]        Andres David Suarez Gomez
 * [Date]          12/03/2020
 * [Language]      'C'
 * [History]       1.0 - Full migration of the C Project to FreeRTOS
+*				  1.1 - Implementation of PID and Lyapunov pose controller
+*				  1.2 - Development of an IP core for encoder reading 
+*				  1.3 - Implementation of communication using XBee boards
 */
 
 /*---------------------------------------INCLUDES---------------------------------------*/
@@ -74,19 +77,23 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName 
 int main( void )
 {
 
-/*--- Nik START ---*/
 	// create Communication task
-	//   Name:  let's name tasks T_xxxx
+	//   Name:  let´s name the tasks RoverTask___
 	//   Stack: let's start with 128 kWords (i.e. 512 kB, since word is 32-bit wide)
 	//   Prio:  keep prio low, let's rise prio only for very hard real time tasks
+
+	/*
+	* Task: 		RoverTaskComm
+	* Description: 	Handles all of the robot communication through XBee
+	* Notes: 		The task stops functioning if I put 128*configMINIMAL_STACK_SIZE
+	*/
 	if (xTaskCreate(RoverTaskComm, "T_comm", 32*configMINIMAL_STACK_SIZE, NULL, TASK_PRIO_LOW, NULL) != pdPASS) {
 		printf("[ERR]: failed to create task T_comm\n");
 	}
-/*--- Nik END ---*/
 
 	/*
-	* Task: 		T_sensing
-	* Description: 	Handles all of the sensor inputs and computes information such as position
+	* Task: 		RoverTaskSensing
+	* Description: 	Handles sensor inputs like ultrasonic sensors and LiDaR
 	* Notes: 		The task stops functioning if I put 128*configMINIMAL_STACK_SIZE
 	*/
 	//if (xTaskCreate(RoverTaskSensing, "T_sensing", configMINIMAL_STACK_SIZE, NULL, TASK_PRIO_LOW, NULL) != pdPASS) {
@@ -94,7 +101,7 @@ int main( void )
 	//}
 
 	/*
-	* Task: 		T_control
+	* Task: 		RoverTaskControl
 	* Description: 	Controls the motion of the robot
 	* Notes: 		The task stops functioning if I put 128*configMINIMAL_STACK_SIZE
 	*/
