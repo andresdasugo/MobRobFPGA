@@ -1,10 +1,3 @@
-/*
- * rover_sensing.c
- *
- *  Created on: 2/04/2020
- *      Author: andre
- */
-
 #include <stdio.h>
 
 #include "FreeRTOS.h"
@@ -27,10 +20,6 @@
 //unsigned char buffer1[5]={0}, buffer2[5]={0}, buffer3[5]={0}, buffer4[5]={0}, buffer5[5]={0}, buffer6[5]={0}, buffer7[5]={0}, buffer8[5]={0};
 //unsigned char puntero1 = 0, puntero2 = 0, puntero3 = 0, puntero4 = 0, puntero5 = 0, puntero6 = 0, puntero7 = 0, puntero8 = 0;
 unsigned int sensordist1=0, sensordist2=0, sensordist3=0, sensordist4 = 0, sensordist5=0, sensordist6=0, sensordist7=0, sensordist8 = 0;
-/*--------------------------------------------------------------------------------------*/
-
-/*-----------------------------------PRIVATE TYPES--------------------------------------*/
-
 /*--------------------------------------------------------------------------------------*/
 
 /*---------------------------------FUNCTION PROTOTYPES----------------------------------*/
@@ -80,7 +69,7 @@ static void isrdist1 (void * context, alt_u32 id){
 
 	if (test == 'R'){
 		puntero = 0;
-		buffer[puntero1] = test;
+		buffer[puntero] = test;
 		puntero++;
 	}
 	else{

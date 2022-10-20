@@ -1,10 +1,3 @@
-/*
- * rover_control.h
- *
- *  Created on: 2/04/2020
- *      Author: andre
- */
-
 #ifndef ROVER_CONTROL_H_
 #define ROVER_CONTROL_H_
 

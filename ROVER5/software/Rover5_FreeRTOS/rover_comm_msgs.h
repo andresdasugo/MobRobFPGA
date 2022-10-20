@@ -1,10 +1,3 @@
-/*
- * rover_comm_msgs.h
- *
- *  Created on: 05/giu/2020
- *      Author: nbattezzati
- */
-
 #ifndef ROVER_COMM_MSGS_H_
 #define ROVER_COMM_MSGS_H_
 

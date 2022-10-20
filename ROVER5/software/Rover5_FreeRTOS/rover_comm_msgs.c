@@ -1,10 +1,3 @@
-/*
- * rover_comm_msgs.c
- *
- *  Created on: 05/giu/2020
- *      Author: nbattezzati
- */
-
 #include <stdio.h>
 #include <stdint.h>
 

@@ -1,10 +1,3 @@
-/*
- * rover_pid.h
- *
- *  Created on: 09/giu/2020
- *      Author: nbattezzati
- */
-
 #ifndef ROVER_PID_H_
 #define ROVER_PID_H_
 

@@ -1,10 +1,3 @@
-/*
- * rover_comm.c
- *
- *  Created on: 25/mar/2020
- *      Author: nbattezzati
- */
-
 #include <stdlib.h>			// for NULL definition
 #include <string.h>			// for memcpy()
 #include <stdbool.h>		// for bool type

@@ -1,10 +1,3 @@
-/*
- * rover_control.c
- *
- *  Created on: 2/04/2020
- *      Author: Andres Suarez
- */
-
 #include <stdio.h>
 
 #include "FreeRTOS.h"
