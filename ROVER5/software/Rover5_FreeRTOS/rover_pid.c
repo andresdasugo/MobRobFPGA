@@ -1,10 +1,3 @@
-/*
- * rover_pid.c
- *
- *  Created on: 09/giu/2020
- *      Author: nbattezzati
- */
-
 #include <math.h>
 #include "rover_pid.h"
 
@@ -99,7 +92,7 @@ float SimplePIDControl (rover_PID_const_t *pid, float setpoint, float measuremen
 	
 	/* If is an angle avoid the error to go to infinite*/
 	if(is_angle == true){
-		*error = atan2f(sinf(e), cosf(e));
+		*error = atan2f(sinf(*error), cosf(*error));
 	}
 
 	/* Compute differential part of the controller */

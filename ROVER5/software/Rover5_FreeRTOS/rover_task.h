@@ -1,10 +1,3 @@
-/*
- * rover_task.h
- *
- *  Created on: 25/mar/2020
- *      Author: nbattezzati
- */
-
 #ifndef ROVER_TASK_H_
 #define ROVER_TASK_H_
 

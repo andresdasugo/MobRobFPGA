@@ -1,12 +1,3 @@
-/*
- * rover_comm.h
- *
- * This file contains the software module for the Rover communication
- *
- *  Created on: 25/mar/2020
- *      Author: nbattezzati
- */
-
 #ifndef ROVER_COMM_H_
 #define ROVER_COMM_H_
 

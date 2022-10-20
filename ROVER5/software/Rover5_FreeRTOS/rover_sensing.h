@@ -1,10 +1,3 @@
-/*
- * rover_sensing.h
- *
- *  Created on: 2/04/2020
- *      Author: andre
- */
-
 #ifndef ROVER_SENSING_H_
 #define ROVER_SENSING_H_
 
