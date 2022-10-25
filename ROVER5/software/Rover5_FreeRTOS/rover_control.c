@@ -115,10 +115,11 @@ typedef enum{
 void SetMobileRobotVelocity(rover_velocities_t * velocities, rover_wheel_velocities_t * wheel_velocities, rover_wheel_velocities_t * measured_wheel_velocities, rover_direction_t * direction, rover_PWM_t * PWM, rover_PID_const_t pid_left_wheel, rover_PID_const_t pid_right_wheel);
 
 // FUNCTION: UpdateOdometry()
-// Description: function to send a message over the RF channel to a specific recipient
-// Parameters:  - to: recipient address
-//              - str: string containing the message to send
-//              - len: length of the string (messages longer than COMM_MAX_MSG_SIZE will be truncated)
+// Description: function to compute the pose (x, y, theta) of the robot according to the encoder data
+// Parameters:  - pose: x, y, theta pose of the robot according to the encoder data
+//              - delta_enc: change in the value of the encoders
+//              - enc_raw: raw data from the encoders in the wheel of the robot
+//              - measured_wheel_velocities: velocities of the wheels according to the encoder data
 // Return:      N/A
 void UpdateOdometry(rover_pose_t * pose, rover_encoders_t * delta_enc, rover_encoders_raw_t * enc_raw, rover_wheel_velocities_t * measured_wheel_velocities);
 
@@ -363,8 +364,8 @@ void SetMobileRobotVelocity(rover_velocities_t * velocities, rover_wheel_velocit
 	IOWR(PWM2_BASE,0,PWM->left);
 }
 
-// FUNCTION: RoverSendMsg()
-// Description: function to send a message over the RF channel to a specific recipient
+// FUNCTION: UpdateOdometry()
+// Description: function to compute the pose (x, y, theta) of the robot according to the encoder data
 void UpdateOdometry(rover_pose_t * pose, rover_encoders_t * delta_enc, rover_encoders_raw_t * enc_raw, rover_wheel_velocities_t * measured_wheel_velocities)
 {
 

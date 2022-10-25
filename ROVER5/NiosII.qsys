@@ -324,19 +324,11 @@
          type = "int";
       }
    }
-   element DIST1.s1
+   element GPS.s1
    {
       datum baseAddress
       {
-         value = "67117312";
-         type = "String";
-      }
-   }
-   element DATA_OUT_I2C.s1
-   {
-      datum baseAddress
-      {
-         value = "67117504";
+         value = "67117376";
          type = "String";
       }
    }
@@ -348,75 +340,11 @@
          type = "String";
       }
    }
-   element DIST7.s1
+   element uart.s1
    {
       datum baseAddress
       {
-         value = "67117120";
-         type = "String";
-      }
-   }
-   element FLAG_I2C.s1
-   {
-      datum baseAddress
-      {
-         value = "67117472";
-         type = "String";
-      }
-   }
-   element GPS.s1
-   {
-      datum baseAddress
-      {
-         value = "67117376";
-         type = "String";
-      }
-   }
-   element CTRL_I2C.s1
-   {
-      datum baseAddress
-      {
-         value = "67117520";
-         type = "String";
-      }
-   }
-   element DATA_IN_I2C.s1
-   {
-      datum baseAddress
-      {
-         value = "67117488";
-         type = "String";
-      }
-   }
-   element PWM1.s1
-   {
-      datum baseAddress
-      {
-         value = "67117552";
-         type = "String";
-      }
-   }
-   element DIST6.s1
-   {
-      datum baseAddress
-      {
-         value = "67117152";
-         type = "String";
-      }
-   }
-   element SW.s1
-   {
-      datum baseAddress
-      {
-         value = "67117648";
-         type = "String";
-      }
-   }
-   element LED.s1
-   {
-      datum baseAddress
-      {
-         value = "67117664";
+         value = "67117056";
          type = "String";
       }
    }
@@ -428,11 +356,27 @@
          type = "String";
       }
    }
-   element uart.s1
+   element XBEE.s1
    {
       datum baseAddress
       {
-         value = "67117056";
+         value = "67117344";
+         type = "String";
+      }
+   }
+   element FLAG_I2C.s1
+   {
+      datum baseAddress
+      {
+         value = "67117472";
+         type = "String";
+      }
+   }
+   element DATA_OUT_I2C.s1
+   {
+      datum baseAddress
+      {
+         value = "67117504";
          type = "String";
       }
    }
@@ -444,67 +388,19 @@
          type = "String";
       }
    }
-   element DIST4.s1
-   {
-      datum baseAddress
-      {
-         value = "67117216";
-         type = "String";
-      }
-   }
-   element ENCODER_NORMAL.s1
-   {
-      datum baseAddress
-      {
-         value = "67117584";
-         type = "String";
-      }
-   }
-   element DIST3.s1
-   {
-      datum baseAddress
-      {
-         value = "67117248";
-         type = "String";
-      }
-   }
-   element XBEE.s1
-   {
-      datum baseAddress
-      {
-         value = "67117344";
-         type = "String";
-      }
-   }
-   element ENCODER_INT.s1
-   {
-      datum baseAddress
-      {
-         value = "67117600";
-         type = "String";
-      }
-   }
-   element PWM2.s1
-   {
-      datum baseAddress
-      {
-         value = "67117536";
-         type = "String";
-      }
-   }
-   element DIST5.s1
-   {
-      datum baseAddress
-      {
-         value = "67117184";
-         type = "String";
-      }
-   }
    element sys_timer.s1
    {
       datum baseAddress
       {
          value = "67117440";
+         type = "String";
+      }
+   }
+   element DIST7.s1
+   {
+      datum baseAddress
+      {
+         value = "67117120";
          type = "String";
       }
    }
@@ -516,11 +412,115 @@
          type = "String";
       }
    }
+   element DIST5.s1
+   {
+      datum baseAddress
+      {
+         value = "67117184";
+         type = "String";
+      }
+   }
+   element DIST3.s1
+   {
+      datum baseAddress
+      {
+         value = "67117248";
+         type = "String";
+      }
+   }
+   element PWM1.s1
+   {
+      datum baseAddress
+      {
+         value = "67117552";
+         type = "String";
+      }
+   }
+   element ENCODER_INT.s1
+   {
+      datum baseAddress
+      {
+         value = "67117600";
+         type = "String";
+      }
+   }
    element KEY.s1
    {
       datum baseAddress
       {
          value = "67117632";
+         type = "String";
+      }
+   }
+   element DIST4.s1
+   {
+      datum baseAddress
+      {
+         value = "67117216";
+         type = "String";
+      }
+   }
+   element CTRL_I2C.s1
+   {
+      datum baseAddress
+      {
+         value = "67117520";
+         type = "String";
+      }
+   }
+   element ENCODER_NORMAL.s1
+   {
+      datum baseAddress
+      {
+         value = "67117584";
+         type = "String";
+      }
+   }
+   element PWM2.s1
+   {
+      datum baseAddress
+      {
+         value = "67117536";
+         type = "String";
+      }
+   }
+   element DIST6.s1
+   {
+      datum baseAddress
+      {
+         value = "67117152";
+         type = "String";
+      }
+   }
+   element LED.s1
+   {
+      datum baseAddress
+      {
+         value = "67117664";
+         type = "String";
+      }
+   }
+   element DATA_IN_I2C.s1
+   {
+      datum baseAddress
+      {
+         value = "67117488";
+         type = "String";
+      }
+   }
+   element SW.s1
+   {
+      datum baseAddress
+      {
+         value = "67117648";
+         type = "String";
+      }
+   }
+   element DIST1.s1
+   {
+      datum baseAddress
+      {
+         value = "67117312";
          type = "String";
       }
    }
