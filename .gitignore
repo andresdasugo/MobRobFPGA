@@ -131,6 +131,7 @@ ROVER5/db/ROVER5.vpr.ammdb
 ROVER5/ROVER5.pti_db_list.ddb
 ROVER5/ROVER5.tis_db_list.ddb
 ROVER5/Flash_Programming/mainFrame.session.xml
+ROVER5/software/.metadata/
 ROVER5/software/.metadata/.mylyn/repositories.xml.zip
 ROVER5/software/Rover5_FreeRTOS_bsp/alt_sys_init.c
 ROVER5/software/Rover5_FreeRTOS_bsp/linker.h
