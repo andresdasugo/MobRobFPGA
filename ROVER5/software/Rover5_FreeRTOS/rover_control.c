@@ -175,7 +175,7 @@ void RoverTaskControl(void *pvParameters)
 						   // Kp , Ki , Kd , Tau , Lim_min, Lim_Max, Tm
 	rover_PID_const_t pid = { 20 , 0  , 0  , 0.01,      0 ,    100 , 0.1};
 								// set_linear_velocity, radius_to_stop, pid
-	rover_pid_params_t pid_pose = {(250*2*R_WHEEL_ONLY), 10, pid};
+	rover_pid_params_t pid_pose = {500, 20, pid};
 	params.pid = &pid_pose;
 	PoseController_Init(RoverPoseControl_PID, &params);
 	bool is_desired_pose = true;
@@ -250,12 +250,12 @@ void RoverTaskControl(void *pvParameters)
 	 	*/
 
 	 	/* Set the velocities of the wheels according to the motion controller*/
-		SetMobileRobotVelocity(&velocities, &wheel_velocities, &measured_wheel_velocities, &direction, &PWM, pid_left_wheel, pid_right_wheel);
+		//SetMobileRobotVelocity(&velocities, &wheel_velocities, &measured_wheel_velocities, &direction, &PWM, pid_left_wheel, pid_right_wheel);
 
 		/* Define an specific direction and PWM values for the robot */
-		//IOWR(MOTORES_BASE,0,RoverDirection_Forward);
-		//IOWR(PWM2_BASE,0,40); //PWM2 -> Left  wheel
-		//IOWR(PWM1_BASE,0,100); //PWM1 -> Right wheel
+		IOWR(MOTORES_BASE,0,RoverDirection_Forward);
+		IOWR(PWM2_BASE,0,50); //PWM2 -> Left  wheel
+		IOWR(PWM1_BASE,0,50); //PWM1 -> Right wheel
 
 		/* Wait for 10 control periods to send a message */
 		if (msg_period == 5){

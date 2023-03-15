@@ -150,11 +150,11 @@ bool PIDPoseControl(
 
 	if (distance_to_goal < params->radius_to_stop){ //If the robot is close enough
 		velocities->v = 0;
-		velocities->w = PIDControl(&(params->pid_const), desired_pose->theta, pose->theta, &angle_error, is_angle);
-		if (angle_error < 0.2){
+		//velocities->w = PIDControl(&(params->pid_const), desired_pose->theta, pose->theta, &angle_error, is_angle);
+		//if (angle_error < 0.2){
 			velocities->w = 0;
 			return true;
-		}
+		//}
 	}else{
 		velocities->v = params->set_linear_velocity;
 		velocities->w = PIDControl(&(params->pid_const), goal_theta, pose->theta, &angle_error, is_angle);
