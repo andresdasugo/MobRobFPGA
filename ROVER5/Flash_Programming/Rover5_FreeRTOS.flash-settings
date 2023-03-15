@@ -18,11 +18,11 @@
      </void> 
      <void property="fileType"> 
       <object class="com.altera.embeddedsw.flash.model.IMemoryFilesModel$FileType" method="valueOf"> 
-       <string>ELF</string> 
+       <string>SOF</string> 
       </object> 
      </void> 
      <void property="filename"> 
-      <string>C:\UPTCRover5v2\ROVER5\software\Rover5_FreeRTOS\Rover5_FreeRTOS.elf</string> 
+      <string>C:\MobRobFPGA\ROVER5\ROVER5.sof</string> 
      </void> 
      <void property="memoryName"> 
       <string>EPCS</string> 
@@ -45,11 +45,11 @@
      </void> 
      <void property="fileType"> 
       <object class="com.altera.embeddedsw.flash.model.IMemoryFilesModel$FileType" method="valueOf"> 
-       <string>SOF</string> 
+       <string>ELF</string> 
       </object> 
      </void> 
      <void property="filename"> 
-      <string>C:\UPTCRover5v2\ROVER5\ROVER5.sof</string> 
+      <string>C:\MobRobFPGA\ROVER5\software\Rover5_FreeRTOS\Rover5_FreeRTOS.elf</string> 
      </void> 
      <void property="memoryName"> 
       <string>EPCS</string> 
@@ -68,7 +68,7 @@
    </void> 
    <void method="put"> 
     <string>sopcinfoFile</string> 
-    <string>C:\UPTCRover5v2\ROVER5\NiosII.sopcinfo</string> 
+    <string>C:\MobRobFPGA\ROVER5\NiosII.sopcinfo</string> 
    </void> 
    <void method="put"> 
     <string>physicalCpuName</string> 
@@ -84,15 +84,15 @@
    </void> 
    <void method="put"> 
     <string>bspFile</string> 
-    <string>C:\UPTCRover5v2\ROVER5\software\Rover5_FreeRTOS_bsp\settings.bsp</string> 
+    <string>C:\MobRobFPGA\ROVER5\software\Rover5_FreeRTOS_bsp\settings.bsp</string> 
    </void> 
    <void method="put"> 
     <string>flashFilesDir</string> 
-    <string>C:\UPTCRover5v2\ROVER5\software\Rover5_FreeRTOS_bsp\flash</string> 
+    <string>C:\MobRobFPGA\ROVER5\software\Rover5_FreeRTOS_bsp\flash</string> 
    </void> 
    <void method="put"> 
     <string>scriptDir</string> 
-    <string>C:\UPTCRover5v2\ROVER5\software\Rover5_FreeRTOS_bsp\script</string> 
+    <string>C:\MobRobFPGA\ROVER5\software\Rover5_FreeRTOS_bsp\script</string> 
    </void> 
    <void method="put"> 
     <string>eraseAllEnabled</string> 
@@ -124,7 +124,7 @@
    </void> 
    <void method="put"> 
     <string>userQpfFile</string> 
-    <string>C:\UPTCRover5v2\ROVER5\ROVER5.qpf</string> 
+    <string>C:\MobRobFPGA\ROVER5\ROVER5.qpf</string> 
    </void> 
   </void> 
   <void property="map"> 
